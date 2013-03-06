@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="templates/template.xhtml">
+        <ui:define name="content">
+            <form id="frmReporte" method="POST" action="http://63.247.92.210/colegionsr/reporteAlumnoSeccion.jsp" target="_blank">
+                <input type="hidden" value="" id="grado" name="grado"/>
+                <input type="hidden" value="" id="seccion" name="seccion"/>
+            </form>
+            <h:form id="frmConsultaAlumno">
+                <p:panel id="panel" header="Consulta de Alumnos"
+                         style="margin-bottom:10px;">
+                    <h:panelGrid columns="2">
+
+                        <h:outputLabel value="Grado: " />
+                        <p:selectOneMenu id="cboGrado" value="#{alumno.idGrado}">
+                            <f:selectItem itemLabel="Seleccione Grado" itemValue="" />  
+                            <f:selectItems value="#{alumno.listadoGrado}" var="grados" 
+                                           itemLabel="#{grados.nombre}" itemValue="#{grados.id}" />
+                            <p:ajax update="cboSeccion" listener="#{alumno.handleGradoChange()}"/>  
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Sección: " />
+                        <p:selectOneMenu id="cboSeccion" value="#{alumno.idSeccion}">
+                            <f:selectItem itemLabel="Seleccione Sección" itemValue="" />  
+                            <f:selectItems value="#{alumno.handleGradoChange()}" var="secciones" 
+                                           itemLabel="#{secciones.nombre}" itemValue="#{secciones.id}" />
+                        </p:selectOneMenu>
+
+                        <p:commandButton actionListener="#{alumno.buscarAlumnoGradoSeccion()}"
+                                         update=":frmConsultaAlumno:dataTable" value="Buscar"
+                                         icon="ui-icon-search" />
+
+                        <a onclick="redireccionaReporteAlumnos();">
+                            <img src="resources/image/pdf.png" alt="Exportar" title="Exportar"
+                                 style="border:0;" />
+                        </a>
+
+                    </h:panelGrid>
+                </p:panel>
+
+                <p:commandLink oncomplete="dialogMatricularAlumno.show()" update=":frmMatricular:pgMatricularAlumno">
+                    <h:graphicImage value="resources/image/agregar.png" alt="Nuevo" title="Nuevo" style="border:0; width:28px; height: 28px" />
+                </p:commandLink>
+
+                <p:dataTable id="dataTable" var="alumnos"  emptyMessage="No hay Alumnos con los criterios solicitados."
+                             value="#{alumno.buscarAlumnoGradoSeccion()}" paginator="true" rows="15"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="10,15,20">
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Apellidos" />
+                        </f:facet>
+                        <h:outputText value="#{alumnos.apellido}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Nombres" />
+                        </f:facet>
+                        <h:outputText value="#{alumnos.nombre}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Apoderado" />
+                        </f:facet>
+                        <h:outputText value="#{alumnos.apoderado}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Usuario" />
+                        </f:facet>
+                        <h:outputText value="#{alumnos.usuario}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Estado Deudor" />
+                        </f:facet>
+                        <h:outputText value="#{alumnos.estadoDeuda}" />
+                    </p:column>
+
+                    <p:column style="text-align:center">
+                        <f:facet name="header">
+                            <h:outputText value="Retirar" />
+                        </f:facet>
+                        <h:commandLink
+                            onclick="return confirm('¿Desea Retirar Alumno?');"
+                            actionListener="#{alumno.retirarUsuario()}">
+                            <f:param name="id" value="#{alumnos.id}" />
+                            <h:graphicImage value="resources/image/del.png" alt="Retirar" title="Retirar"
+                                            style="border:0; width: 18px; height: 18px" />
+                        </h:commandLink>
+                    </p:column>
+
+                    <p:column style="text-align:center">
+                        <f:facet name="header">
+                            <h:outputText value="Editar" />
+                        </f:facet>
+                        <p:commandLink actionListener="#{alumno.traerAlumno()}"
+                                       oncomplete="dialogActualizarAlumno.show()"
+                                       update=":frmActualizar:pgActualizarAlumno">
+                            <f:param name="id" value="#{alumnos.id}" />
+                            <h:graphicImage value="resources/image/upd.png" alt="Actualizar"
+                                            title="Actualizar" style="border:0; width: 18px; height: 18px" />
+                        </p:commandLink>
+                    </p:column>
+
+                    <p:column style="text-align:center">
+                        <f:facet name="header">
+                            <h:outputText value="Ver Libreta" />
+                        </f:facet>
+                        <p:commandLink actionListener="#{alumno.verLibreta()}"
+                                       oncomplete="dialogLibretaNotas.show()"
+                                       update=":frmNuevo:dtLibreta, :frmNuevo:dgLibreta, :frmNuevo:dtOrdenMerito">
+                            <f:param name="id" value="#{alumnos.id}" />
+                            <h:graphicImage value="resources/image/libreta.png" alt="Libreta"
+                                            title="Libreta" style="border:0; width: 28px; height: 28px" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog id="dialogLibreta" header="LIBRETA DE NOTAS"
+                      widgetVar="dialogLibretaNotas" resizable="true" modal="true"
+                      showEffect="slide" width="900" height="650">
+                <h:form id="frmNuevo">
+                    <p:dataTable id="dtLibreta" var="libretas" emptyMessage="No hay Notas con los criterios solicitados."
+                                 value="#{alumno.listadoLibreta}" rows="20">
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="CURSO" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.curso}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE I" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.notaBimestre1}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE II" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.notaBimestre2}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE III" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.notaBimestre3}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE IV" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.notaBimestre4}" />
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:dataTable id="dtOrdenMerito"  var="ordenmeritos" emptyMessage="No hay Datos con los criterios solicitados."
+                                 value="#{alumno.listadoLibretaOrdenMerito}" rows="5">
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="RESPONSABILIDAD" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.ordenMerito}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE I" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.bimestre1}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE II" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.bimestre2}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE III" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.bimestre3}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE IV" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.bimestre4}" />
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:dataGrid id="dgLibreta" var="observaciones" value="#{alumno.listadoLibretaObservacion}" columns="1" emptyMessage="No hay Observaciones con los criterios solicitados.">  
+                        <f:facet name="header">
+                            <h:outputText value="OBSERVACIONES" />
+                        </f:facet>
+                        <p:panel header="PERIODO #{observaciones.idBimestre}" style="text-align:center">  
+                            <h:panelGrid columns="1" style="width:100%">  
+                                <h:outputText value="#{observaciones.observacion}" />  
+                            </h:panelGrid>  
+                        </p:panel>  
+                    </p:dataGrid> 
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="dialogActualizar" header="Datos Alumno"
+                      widgetVar="dialogActualizarAlumno" resizable="false" modal="true"
+                      showEffect="slide" width="500">
+                <h:form id="frmActualizar">
+                    <h:panelGrid id="pgActualizarAlumno" columns="2">
+                        <h:outputLabel value="Nombre: " />
+                        <p:inputText id="txtNombre" value="#{alumno.nombre}"/>
+
+                        <h:outputLabel value="Apellidos: " />
+                        <p:inputText id="txtApellidos" value="#{alumno.apellido}"/>
+
+                        <h:outputLabel value="Apoderado: " />
+                        <p:inputText id="txtApoderado" value="#{alumno.apoderado}" />
+
+                        <h:outputLabel value="Grado: " />
+                        <p:selectOneMenu id="cboGrado" value="#{alumno.idGrado}">
+                            <f:selectItem itemLabel="Seleccione Grado" itemValue="" />  
+                            <f:selectItems value="#{alumno.listadoGrado}" var="grados" 
+                                           itemLabel="#{grados.nombre}" itemValue="#{grados.id}" />
+                            <p:ajax update="cboSeccion" listener="#{alumno.handleGradoChange()}"/>  
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Sección: " />
+                        <p:selectOneMenu id="cboSeccion" value="#{alumno.idSeccion}">
+                            <f:selectItem itemLabel="Seleccione Sección" itemValue="" />  
+                            <f:selectItems value="#{alumno.handleGradoChange()}" var="secciones" 
+                                           itemLabel="#{secciones.nombre}" itemValue="#{secciones.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Usuario: " />
+                        <p:inputText id="txtUsuario" value="#{alumno.usuario}" />
+
+                        <h:outputLabel value="Contraseña: " />
+                        <p:inputText id="txtContrasenia" value="#{alumno.contrasenia}" />
+
+                        <h:outputLabel value="Activo: " />
+                        <p:selectBooleanCheckbox id="chkDeuda"
+                                                 value="#{alumno.estadoDeuda}" />
+
+                        <p:commandButton oncomplete="dialogActualizarAlumno.hide();"
+                                         actionListener="#{alumno.actualizarAlumno()}"
+                                         update=":frmConsultaAlumno:dataTable, :frmConsultaAlumno:panel" value="Grabar"
+                                         icon="ui-icon-disk" />
+
+                        <p:commandButton oncomplete="dialogActualizarAlumno.hide();"
+                                         actionListener="#{alumno.limpiar()}" value="Cancelar"
+                                         update=":frmConsultaAlumno:dataTable, :frmConsultaAlumno:panel" icon="ui-icon-cancel" />
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="dialogMatricular" header="Datos Alumno"
+                      widgetVar="dialogMatricularAlumno" resizable="false" modal="true"
+                      showEffect="slide" width="500">
+                <h:form id="frmMatricular">
+                    <h:panelGrid id="pgMatricularAlumno" columns="2">
+                        <h:outputLabel value="Nombre: " />
+                        <p:inputText id="txtNombre" value="#{alumno.nombre}"/>
+
+                        <h:outputLabel value="Apellidos: " />
+                        <p:inputText id="txtApellidos" value="#{alumno.apellido}"/>
+
+                        <h:outputLabel value="Apoderado: " />
+                        <p:inputText id="txtApoderado" value="#{alumno.apoderado}" />
+
+                        <h:outputLabel value="Grado: " />
+                        <p:selectOneMenu id="cboGrado" value="#{alumno.idGrado}">
+                            <f:selectItem itemLabel="Seleccione Grado" itemValue="" />  
+                            <f:selectItems value="#{alumno.listadoGrado}" var="grados" 
+                                           itemLabel="#{grados.nombre}" itemValue="#{grados.id}" />
+                            <p:ajax update="cboSeccion" listener="#{alumno.handleGradoChange()}"/>  
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Sección: " />
+                        <p:selectOneMenu id="cboSeccion" value="#{alumno.idSeccion}">
+                            <f:selectItem itemLabel="Seleccione Sección" itemValue="" />  
+                            <f:selectItems value="#{alumno.handleGradoChange()}" var="secciones" 
+                                           itemLabel="#{secciones.nombre}" itemValue="#{secciones.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Usuario: " />
+                        <p:inputText id="txtUsuario" value="#{alumno.usuario}" />
+
+                        <p:commandButton oncomplete="dialogMatricularAlumno.hide();"
+                                         actionListener="#{alumno.matricularAlumno()}"
+                                         update=":frmConsultaAlumno:dataTable, :frmConsultaAlumno:panel" value="Grabar"
+                                         icon="ui-icon-disk" />
+
+                        <p:commandButton oncomplete="dialogMatricularAlumno.hide();"
+                                         actionListener="#{alumno.limpiar()}" value="Cancelar"
+                                         update=":frmConsultaAlumno:dataTable, :frmConsultaAlumno:panel" icon="ui-icon-cancel" />
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

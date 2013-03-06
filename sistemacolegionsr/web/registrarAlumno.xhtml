@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="templates/template.xhtml">
+        <ui:define name="content">
+            <h:form id="frmRegistrarAlumno">
+                <p:panel id="panel" header="Datos Alumno"
+                         style="margin-bottom:10px;">
+
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Nombre: " />
+                        <p:inputText id="txtNombre" value="#{alumno.nombre}"/>
+
+                        <h:outputLabel value="Apellidos: " />
+                        <p:inputText id="txtApellidos" value="#{alumno.apellido}"/>
+
+                        <h:outputLabel value="Apoderado: " />
+                        <p:inputText id="txtApoderado" value="#{alumno.apoderado}" />
+
+                        <h:outputLabel value="Grado: " />
+                        <p:selectOneMenu id="cboGrado" value="#{alumno.idGrado}">
+                            <f:selectItem itemLabel="Seleccione Grado" itemValue="" />  
+                            <f:selectItems value="#{alumno.listadoGrado}" var="grados" 
+                                           itemLabel="#{grados.nombre}" itemValue="#{grados.id}" />
+                            <p:ajax update="cboSeccion" listener="#{alumno.handleGradoChange()}"/>  
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Sección: " />
+                        <p:selectOneMenu id="cboSeccion" value="#{alumno.idSeccion}">
+                            <f:selectItem itemLabel="Seleccione Sección" itemValue="" />  
+                            <f:selectItems value="#{alumno.handleGradoChange()}" var="secciones" 
+                                           itemLabel="#{secciones.nombre}" itemValue="#{secciones.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Usuario: " />
+                        <p:inputText id="txtUsuario" value="#{alumno.usuario}" />
+
+
+                        <p:commandButton action="#{alumno.verPrincipal()}"
+                                         actionListener="#{alumno.matricularAlumno()}"
+                                         update=":frmRegistrarAlumno:panel" value="Grabar" icon="ui-icon-disk" />
+
+                        <p:commandButton  action="#{alumno.verPrincipal()}" actionListener="#{alumno.limpiar()}"
+                                          update=":frmRegistrarAlumno:panel" value="Cancelar" icon="ui-icon-cancel" />
+
+                    </h:panelGrid>
+                </p:panel>
+
+            </h:form>
+        </ui:define>
+
+    </ui:composition>
+
+</html>

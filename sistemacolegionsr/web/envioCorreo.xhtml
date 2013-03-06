@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="templates/templateAlumno.xhtml">
+        <ui:define name="contentAlumno">
+            <h:form>
+
+                <p:growl id="grMensaje" showDetail="true" life="6000" />
+                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/> 
+
+                <p:panel id="panel" header="Envio de Correo Electrónico"
+                         style="margin-bottom:10px;">
+
+                    <h:panelGrid id="pgEnvioMensaje" columns="4">
+
+                        <h:outputLabel value="De: *" />
+                        <p:inputText id="txtNombres" value="#{correo.name}" required="true" 
+                                     requiredMessage="Por favor, escriba sus nombres y apellidos." style="width: 428px"/>
+                        <p:message for="txtNombres"/> 
+                        <p:watermark for="txtNombres" value="Sus Nombres y Apellidos"/>
+
+                        <h:outputLabel value="Correo: *" />
+                        <p:inputText id="txtDe" value="#{correo.from}" required="true" requiredMessage="Por favor, escriba su correo." 
+                                     validatorMessage="Por favor, Escriba un correo valido." style="width: 428px">
+                            <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                        </p:inputText>
+                        <p:message for="txtDe"/>
+                        <p:watermark for="txtDe" value="Su Correo"/>
+
+                        <h:outputLabel value="Asunto: " />
+                        <p:inputText id="txtAsunto" value="#{correo.subject}" style="width: 428px"/>
+                        <p:watermark for="txtAsunto" value="Asunto del mensaje"/>
+                        <h:outputLabel value=""/>
+
+                        <h:outputLabel value="Mensaje: *" />
+                        <p:editor id="eMensaje" value="#{correo.message}" width="600" required="true" 
+                                  requiredMessage="Por favor, escriba el mensaje."/>
+                        <p:message for="eMensaje"/>
+                        <h:outputLabel value=""/>
+
+                        <p:commandButton actionListener="#{correo.enviar()}" value="Enviar" update="messages ,grMensaje, pgEnvioMensaje" icon="ui-icon-mail-closed" />
+
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

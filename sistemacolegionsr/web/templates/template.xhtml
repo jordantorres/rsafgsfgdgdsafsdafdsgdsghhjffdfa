@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputScript library="js" name="util.js" />
+        <title>Sistema Colegio Nuestra Señora del Rosario</title>
+    </h:head>
+
+    <h:body>
+        <div id="top">
+            <img src="resources/image/logo.png" />
+            <p:separator style="height:2%; width:100%"/>
+        </div>
+        <div id="content" class="center_content">
+            <div id="menu">
+                <h:form id="frmMenu">
+                    <p:menubar autoDisplay="true">
+                        <p:submenu label="Registros" icon="ui-icon-document">
+                            <p:menuitem value="Registrar Alumno" icon="ui-icon-pencil"
+                                        url="registrarAlumno.xhtml" />
+                            <p:menuitem value="Registrar Notas" icon="ui-icon-pencil"
+                                        url="registrarNotas.xhtml" />
+                        </p:submenu>
+                        <p:submenu label="Consultas" icon="ui-icon-search">
+                            <p:menuitem value="Consulta Alumnos"
+                                        url="consultarAlumno.xhtml" icon="ui-icon-search"></p:menuitem>
+                            <p:menuitem value="Consulta Notas" url="consultarNotas.xhtml" icon="ui-icon-search"></p:menuitem>
+                            <p:menuitem value="Consulta Tutor" url="consultarTutores.xhtml" icon="ui-icon-search"></p:menuitem>
+                        </p:submenu>
+                        <p:submenu label="Reportes" icon="ui-icon-clipboard">
+                            <p:menuitem value="Usuarios y Contraseñas" url="consultaUsuariosPasswordAlumnos.xhtml" icon="ui-icon-person"></p:menuitem>
+                        </p:submenu>
+                        <p:menuitem value="Salir" url="LimpiarCookie" icon="ui-icon-close" />  
+                    </p:menubar>
+                </h:form>
+            </div>
+            <div>
+                <ui:insert name="content"></ui:insert>
+            </div>
+        </div>
+    </h:body>
+</html>

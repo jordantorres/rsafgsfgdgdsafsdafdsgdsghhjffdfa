@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <ui:composition template="templates/templateAlumno.xhtml">
+        <ui:define name="contentAlumno">
+            <form id="frmReporteLibreta" method="POST" action="http://63.247.92.210/colegionsr/reporteNotasAlumno.jsp" target="_blank">
+                <input type="hidden"  id="alumno" name="alumno" value="#{sessionScope['idAlumno']}" />
+            </form>
+            <h:form id="frmConsultaNotas">
+                <p:panel id="panel" header="LIBRETA DE NOTAS"
+                         style="margin-bottom:10px; text-align:center;">
+
+
+                    <p:dataTable id="dtLibreta" var="libretas" emptyMessage="No hay Notas con los criterios solicitados."
+                                 value="#{usuarioAlumno.listadoNotas}" rows="20">
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="CURSO" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.curso}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE I" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.notaBimestre1}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE II" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.notaBimestre2}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE III" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.notaBimestre3}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE IV" />
+                            </f:facet>
+                            <h:outputText value="#{libretas.notaBimestre4}" />
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <p:dataTable id="dtOrdenMerito"  var="ordenmeritos" emptyMessage="No hay Datos con los criterios solicitados."
+                                 value="#{usuarioAlumno.listadoOrdenMerito}" rows="5">
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="RESPONSABILIDAD" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.ordenMerito}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE I" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.bimestre1}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE II" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.bimestre2}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE III" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.bimestre3}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="BIMESTRE IV" />
+                            </f:facet>
+                            <h:outputText value="#{ordenmeritos.bimestre4}" />
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:dataGrid id="dgObservacion" var="obs" value="#{usuarioAlumno.listadoObservacion}" columns="1" emptyMessage="No hay Observaciones con los criterios solicitados.">  
+                        <f:facet name="header">
+                            <h:outputText value="OBSERVACIONES" />
+                        </f:facet>
+                        <p:panel header="PERIODO #{obs.idBimestre}" style="text-align:left">  
+                            <h:panelGrid columns="1" style="width:100%">  
+                                <h:outputText value="#{obs.observacion}" />  
+                            </h:panelGrid>  
+                        </p:panel>  
+                    </p:dataGrid>  
+
+                    <h:panelGrid columns="1" width="100%">
+                        <a onclick="redireccionaReporteLibreta();">
+                            <img src="resources/image/pdf.png" alt="Exportar" title="Exportar"
+                                 style="border:0;" />
+                        </a>
+                    </h:panelGrid>
+
+                </p:panel>
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

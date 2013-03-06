@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="templates/templateAlumno.xhtml">
+        <ui:define name="contentAlumno">
+            <h:form id="frmCambiarContrasenia">
+                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/> 
+                <p:panel header="Cambiar Contraseña">  
+                    <h:panelGrid id="pgContrasenia" columns="3">  
+
+                        <h:outputText value="Antigua Contraseña: *" />  
+                        <p:password id="pContraseniaAntigua" style="width:200px;" value="#{usuarioAlumno.contraseniaActual}" 
+                                    required="true" requiredMessage="Por favor, escriba su antigua contraseña.">
+                            <p:ajax update="msgContraseniaAntigua" event="keyup" />
+                        </p:password> 
+                        <p:message  id="msgContraseniaAntigua" for="pContraseniaAntigua" />
+
+                        <h:outputText value="Nueva Contraseña: *" /> 
+                        <p:password id="pContraseniaNueva1" style="width:200px;" value="#{usuarioAlumno.contraseniaNueva}" 
+                                    required="true" match="pContraseniaNueva2" feedback="true" 
+                                    promptLabel="Por favor, introduzca una contraseña" 
+                                    weakLabel="Débil" goodLabel="Bueno" strongLabel="Fuerte"
+                                    validatorMessage="Las contraseña deben concidir. vuelva a intentarlo" 
+                                    requiredMessage="Por favor, escriba su nueva contraseña.">
+                            <p:ajax update="msgContraseniaNueva1" event="keyup" /> 
+                        </p:password> 
+                        <p:message id="msgContraseniaNueva1" for="pContraseniaNueva1" />
+
+                        <h:outputText value="Repetir Nueva Contraseña: *"  /> 
+                        <p:password id="pContraseniaNueva2" style="width:200px;" value="#{usuarioAlumno.contraseniaNueva}"  
+                                    required="true" requiredMessage="Por favor, vuelva escribir su nueva contraseña."/>
+                        <p:ajax update="msgContraseniaNueva2,msgContraseniaNueva1" event="keyup" />
+                        <p:message id="msgContraseniaNueva2" for="pContraseniaNueva2" />
+
+                        <p:commandButton id="btnGrabar" update="pgContrasenia" value="Grabar"  actionListener="#{usuarioAlumno.cambiarContrasenia()}"/>  
+                    </h:panelGrid> 
+                </p:panel>  
+            </h:form>
+        </ui:define>
+    </ui:composition>      
+
+</html>
+

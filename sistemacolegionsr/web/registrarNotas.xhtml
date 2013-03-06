@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="templates/template.xhtml">
+        <ui:define name="content">
+            <h:form id="frmRegistrarNotas">
+                <p:panel id="panel" header="Registro de Notas"
+                         style="margin-bottom:10px;">
+                    <h:panelGrid columns="2">
+
+                        <h:outputLabel value="Grado: " />
+                        <p:selectOneMenu id="cboGrado" value="#{nota.idGrado}">
+                            <f:selectItem itemLabel="Seleccione Grado" itemValue="" />  
+                            <f:selectItems value="#{nota.listadoGrado}" var="grados" 
+                                           itemLabel="#{grados.nombre}" itemValue="#{grados.id}" />
+                            <p:ajax update="cboSeccion, cboAlumno" listener="#{nota.handleGradoChange()}"/>
+                            <p:ajax update="cboCurso" listener="#{nota.handleGradoCursoChange()}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Sección: " />
+                        <p:selectOneMenu id="cboSeccion" value="#{nota.idSeccion}">
+                            <f:selectItem itemLabel="Seleccione Sección" itemValue="" />  
+                            <f:selectItems value="#{nota.handleGradoChange()}" var="secciones" 
+                                           itemLabel="#{secciones.nombre}" itemValue="#{secciones.id}" />
+                            <p:ajax update="cboAlumno" listener="#{nota.handleSeccionChange()}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Alumno: " />
+                        <p:selectOneMenu id="cboAlumno" value="#{nota.idAlumno}">
+                            <f:selectItem itemLabel="Seleccione Alumno" itemValue="" />  
+                            <f:selectItems value="#{nota.handleSeccionChange()}" var="alumnos" 
+                                           itemLabel="#{alumnos.apellido}, #{alumnos.nombre}" itemValue="#{alumnos.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Curso: " />
+                        <p:selectOneMenu id="cboCurso" value="#{nota.idCurso}">
+                            <f:selectItem itemLabel="Seleccione Curso" itemValue="" />  
+                            <f:selectItems value="#{nota.handleGradoCursoChange()}" var="cursos" 
+                                           itemLabel="#{cursos.nombre}" itemValue="#{cursos.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Bimestre: " />
+                        <p:selectOneMenu id="cboBimestre" value="#{nota.idBimestre}">
+                            <f:selectItem itemLabel="Seleccione Bimestre" itemValue="" />  
+                            <f:selectItems value="#{nota.listadoBimestre}" var="bimestres" 
+                                           itemLabel="#{bimestres.nombre}" itemValue="#{bimestres.id}" />
+                        </p:selectOneMenu>
+                        
+                        <h:outputLabel value="Nota: " />
+                        <p:inputText id="txtNota" value="#{nota.nota}" />
+
+                        <p:commandButton action="#{nota.verPrincipal()}"
+                                         actionListener="#{nota.registrarNota()}"
+                                         update=":frmRegistrarNotas:panel" value="Grabar" icon="ui-icon-disk" />
+
+                        <p:commandButton  action="#{nota.verPrincipal()}" actionListener="#{nota.limpiar()}"
+                                          update=":frmRegistrarNotas:panel" value="Cancelar" icon="ui-icon-cancel" />
+
+                    </h:panelGrid>
+                </p:panel>
+
+            </h:form>
+        </ui:define>
+
+    </ui:composition>
+
+</html>

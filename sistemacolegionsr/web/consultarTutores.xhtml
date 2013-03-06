@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="templates/template.xhtml">
+        <ui:define name="content">
+            <h:form id="frmConsultaTutor">
+                <p:panel id="panel" header="Consulta de Tutores"
+                         style="margin-bottom:10px;">
+
+                    <p:commandLink oncomplete="dialogRegistrarTutor.show()" update=":frmRegistrar:pgRegistrarTutor">
+                        <h:graphicImage value="resources/image/agregar.png" alt="Nuevo" title="Nuevo" style="border:0; width:28px; height: 28px" />
+                    </p:commandLink>
+
+                    <p:dataTable id="dataTable" var="tutores"  emptyMessage="No hay Tutores registrados."
+                                 value="#{tutor.listadoTutores}" paginator="true" rows="15"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="10,15,20">
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Apellidos" />
+                            </f:facet>
+                            <h:outputText value="#{tutores.apellido}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nombres" />
+                            </f:facet>
+                            <h:outputText value="#{tutores.nombre}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Usuario" />
+                            </f:facet>
+                            <h:outputText value="#{tutores.usuario}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Grado" />
+                            </f:facet>
+                            <h:outputText value="#{tutores.nombreGrado}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Sección" />
+                            </f:facet>
+                            <h:outputText value="#{tutores.nombreSeccion}" />
+                        </p:column>
+
+                        <p:column style="text-align:center">
+                            <f:facet name="header">
+                                <h:outputText value="Retirar" />
+                            </f:facet>
+                            <h:commandLink
+                                onclick="return confirm('¿Desea Retirar Tutor?');"
+                                actionListener="#{tutor.retirarTutor()}">
+                                <f:param name="id" value="#{tutores.id}" />
+                                <h:graphicImage value="resources/image/del.png" alt="Retirar" title="Retirar"
+                                                style="border:0; width: 18px; height: 18px" />
+                            </h:commandLink>
+                        </p:column>
+
+                        <p:column style="text-align:center">
+                            <f:facet name="header">
+                                <h:outputText value="Editar" />
+                            </f:facet>
+                            <p:commandLink actionListener="#{tutor.traerTutor()}"
+                                           oncomplete="dialogActualizarTutor.show()"
+                                           update=":frmActualizar:pgActualizarTutor">
+                                <f:param name="id" value="#{tutores.id}" />
+                                <h:graphicImage value="resources/image/upd.png" alt="Actualizar"
+                                                title="Actualizar" style="border:0; width: 18px; height: 18px" />
+                            </p:commandLink>
+                        </p:column>
+
+                    </p:dataTable>
+                </p:panel>     
+            </h:form>
+
+            <p:dialog id="dialogActualizar" header="Datos Tutor"
+                      widgetVar="dialogActualizarTutor" resizable="false" modal="true"
+                      showEffect="slide" width="500">
+                <h:form id="frmActualizar">
+                    <h:panelGrid id="pgActualizarTutor" columns="2">
+                        <h:outputLabel value="Nombre: " />
+                        <p:inputText id="txtNombre" value="#{tutor.nombre}"/>
+
+                        <h:outputLabel value="Apellidos: " />
+                        <p:inputText id="txtApellidos" value="#{tutor.apellido}"/>
+
+                        <h:outputLabel value="Grado: " />
+                        <p:selectOneMenu id="cboGrado" value="#{tutor.idGrado}">
+                            <f:selectItem itemLabel="Seleccione Grado" itemValue="" />  
+                            <f:selectItems value="#{tutor.listadoGrado}" var="grados" 
+                                           itemLabel="#{grados.nombre}" itemValue="#{grados.id}" />
+                            <p:ajax update="cboSeccion" listener="#{tutor.handleGradoChange()}"/>  
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Sección: " />
+                        <p:selectOneMenu id="cboSeccion" value="#{tutor.idSeccion}">
+                            <f:selectItem itemLabel="Seleccione Sección" itemValue="" />  
+                            <f:selectItems value="#{tutor.handleGradoChange()}" var="secciones" 
+                                           itemLabel="#{secciones.nombre}" itemValue="#{secciones.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Usuario: " />
+                        <p:inputText id="txtUsuario" value="#{tutor.usuario}" />
+
+                        <h:outputLabel value="Contraseña: " />
+                        <p:inputText id="txtContrasenia" value="#{tutor.contrasenia}" />
+
+                        <p:commandButton oncomplete="dialogActualizarTutor.hide();"
+                                         actionListener="#{tutor.actualizarTutor()}"
+                                         update=":frmConsultaTutor:dataTable" value="Grabar"
+                                         icon="ui-icon-disk" />
+
+                        <p:commandButton oncomplete="dialogActualizarTutor.hide();"
+                                         actionListener="#{tutor.limpiar()}" value="Cancelar"
+                                         update=":frmConsultaTutor:dataTable" icon="ui-icon-cancel" />
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="dialogRegistrar" header="Datos Tutor"
+                      widgetVar="dialogRegistrarTutor" resizable="false" modal="true"
+                      showEffect="slide" width="500">
+                <h:form id="frmRegistrar">
+                    <h:panelGrid id="pgRegistrarTutor" columns="2">
+                        <h:outputLabel value="Nombre: " />
+                        <p:inputText id="txtNombre" value="#{tutor.nombre}"/>
+
+                        <h:outputLabel value="Apellidos: " />
+                        <p:inputText id="txtApellidos" value="#{tutor.apellido}"/>
+
+                        <h:outputLabel value="Grado: " />
+                        <p:selectOneMenu id="cboGrado" value="#{tutor.idGrado}">
+                            <f:selectItem itemLabel="Seleccione Grado" itemValue="" />  
+                            <f:selectItems value="#{tutor.listadoGrado}" var="grados" 
+                                           itemLabel="#{grados.nombre}" itemValue="#{grados.id}" />
+                            <p:ajax update="cboSeccion" listener="#{tutor.handleGradoChange()}"/>  
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Sección: " />
+                        <p:selectOneMenu id="cboSeccion" value="#{tutor.idSeccion}">
+                            <f:selectItem itemLabel="Seleccione Sección" itemValue="" />  
+                            <f:selectItems value="#{tutor.handleGradoChange()}" var="secciones" 
+                                           itemLabel="#{secciones.nombre}" itemValue="#{secciones.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Usuario: " />
+                        <p:inputText id="txtUsuario" value="#{tutor.usuario}" />
+
+                        <p:commandButton oncomplete="dialogRegistrarTutor.hide();"
+                                         actionListener="#{tutor.registrarTutor()}"
+                                         update=":frmConsultaTutor:dataTable" value="Grabar"
+                                         icon="ui-icon-disk" />
+
+                        <p:commandButton oncomplete="dialogRegistrarTutor.hide();"
+                                         actionListener="#{tutor.limpiar()}" value="Cancelar"
+                                         update=":frmConsultaTutor:dataTable" icon="ui-icon-cancel" />
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

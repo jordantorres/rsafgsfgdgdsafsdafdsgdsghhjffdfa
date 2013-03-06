@@ -1,0 +1,277 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="templates/template.xhtml">
+        <ui:define name="content">
+            <form id="frmReporteNotas" method="POST" action="http://63.247.92.210/colegionsr/reporteNotasAlumno.jsp" target="_blank">
+                <input type="hidden" value="" id="alumno" name="alumno"/>
+            </form>
+            <h:form id="frmConsultaNotas">
+                <p:panel id="panel" header="Consulta de Alumnos"
+                         style="margin-bottom:10px;">
+                    <h:panelGrid columns="4">
+
+                        <h:outputLabel value="Grado: " />
+                        <p:selectOneMenu id="cboGrado" value="#{alumno.idGrado}">
+                            <f:selectItem itemLabel="Seleccione Grado" itemValue="" />  
+                            <f:selectItems value="#{alumno.listadoGrado}" var="grados" 
+                                           itemLabel="#{grados.nombre}" itemValue="#{grados.id}" />
+                            <p:ajax update="cboSeccion,cboAlumno" listener="#{alumno.handleGradoChange()}"/>  
+                        </p:selectOneMenu>
+                        <h:outputLabel value="" />
+                        <h:outputLabel value="" />
+
+                        <h:outputLabel value="Sección: " />
+                        <p:selectOneMenu id="cboSeccion" value="#{alumno.idSeccion}">
+                            <f:selectItem itemLabel="Seleccione Sección" itemValue="" />  
+                            <f:selectItems value="#{alumno.handleGradoChange()}" var="secciones" 
+                                           itemLabel="#{secciones.nombre}" itemValue="#{secciones.id}" />
+                            <p:ajax update="cboAlumno" listener="#{alumno.buscarAlumnoGradoSeccion()}"/> 
+                        </p:selectOneMenu>
+                        <h:outputLabel value="" />
+                        <h:outputLabel value="" />
+
+                        <h:outputLabel value="Alumno: " />
+                        <p:selectOneMenu id="cboAlumno" value="#{alumno.idAlumnoBuscar}">
+                            <f:selectItem itemLabel="Seleccione Alumno" itemValue="" />  
+                            <f:selectItems value="#{alumno.buscarAlumnoGradoSeccion()}" var="alumnos" 
+                                           itemLabel="#{alumnos.apellido}, #{alumnos.nombre}" itemValue="#{alumnos.id}" />
+                        </p:selectOneMenu>
+                        <h:outputLabel value="" />
+                        <h:outputLabel value="" />
+
+                        <p:commandButton actionListener="#{alumno.verNotas()}"
+                                         update=":frmConsultaNotas:dtLibreta, :frmConsultaNotas:dgObservacion, :frmConsultaNotas:dtOrdenMerito" value="Buscar"
+                                         icon="ui-icon-search" />
+
+                        <p:commandButton oncomplete="dialogRegistrarObservaciones.show()"
+                                         update=":frmObservaciones:pgObservaciones" value="Registrar Observación"
+                                         icon="ui-icon-pencil" />
+
+                        <p:commandButton oncomplete="dialogRegistrarOrdenMerito.show()"
+                                         update=":frmOrdenMerito:pgOrdenMerito" value="Registrar Responsabilidad"
+                                         icon="ui-icon-pencil" />
+
+                        <a onclick="redireccionaReporteNotas();">
+                            <img src="resources/image/pdf.png" alt="Exportar" title="Exportar"
+                                 style="border:0;" />
+                        </a>
+
+                    </h:panelGrid>
+                </p:panel>
+
+                <p:dataTable id="dtLibreta" var="libretas" emptyMessage="No hay Notas con los criterios solicitados."
+                             value="#{alumno.verNotas()}" rows="20">
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="CURSO" />
+                        </f:facet>
+                        <h:outputText value="#{libretas.curso}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="BIMESTRE I" />
+                        </f:facet>
+                        <h:outputText value="#{libretas.notaBimestre1}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="BIMESTRE II" />
+                        </f:facet>
+                        <h:outputText value="#{libretas.notaBimestre2}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="BIMESTRE III" />
+                        </f:facet>
+                        <h:outputText value="#{libretas.notaBimestre3}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="BIMESTRE IV" />
+                        </f:facet>
+                        <h:outputText value="#{libretas.notaBimestre4}" />
+                    </p:column>
+
+                    <p:column style="text-align:center">
+                        <f:facet name="header">
+                            <h:outputText value="Editar" />
+                        </f:facet>
+                        <p:commandLink actionListener="#{alumno.traerLibretaCurso()}"
+                                       oncomplete="dialogRegistrarNotaCurso.show()"
+                                       update=":frmRegistrarNotaCurso:pgRegistrarNotaCurso">
+                            <f:param name="id" value="#{libretas.idCurso}" />
+                            <h:graphicImage value="resources/image/upd.png" alt="Actualizar"
+                                            title="Actualizar" style="border:0; width: 18px; height: 18px" />
+                        </p:commandLink>
+                    </p:column>
+
+                </p:dataTable>
+
+                <p:dataTable id="dtOrdenMerito"  var="ordenmeritos" emptyMessage="No hay Datos con los criterios solicitados."
+                             value="#{alumno.verOrdenMerito()}" rows="5">
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="RESPONSABILIDAD" />
+                        </f:facet>
+                        <h:outputText value="#{ordenmeritos.ordenMerito}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="BIMESTRE I" />
+                        </f:facet>
+                        <h:outputText value="#{ordenmeritos.bimestre1}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="BIMESTRE II" />
+                        </f:facet>
+                        <h:outputText value="#{ordenmeritos.bimestre2}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="BIMESTRE III" />
+                        </f:facet>
+                        <h:outputText value="#{ordenmeritos.bimestre3}" />
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="BIMESTRE IV" />
+                        </f:facet>
+                        <h:outputText value="#{ordenmeritos.bimestre4}" />
+                    </p:column>
+                </p:dataTable>
+
+                <p:dataGrid id="dgObservacion" var="obs" value="#{alumno.verObservaciones()}" columns="1" emptyMessage="No hay Observaciones con los criterios solicitados.">  
+                    <f:facet name="header">
+                        <h:outputText value="OBSERVACIONES" />
+                    </f:facet>
+                    <p:panel header="PERIODO #{obs.idBimestre}" style="text-align:left">  
+                        <h:panelGrid columns="1" style="width:100%">  
+                            <h:outputText value="#{obs.observacion}" />  
+                        </h:panelGrid>  
+                    </p:panel>  
+                </p:dataGrid>  
+
+            </h:form>
+
+            <p:dialog id="dialogObservaciones" header="Registrar Observación"
+                      widgetVar="dialogRegistrarObservaciones" resizable="false" modal="false"
+                      showEffect="slide" width="700">
+                <h:form id="frmObservaciones">
+                    <h:panelGrid id="pgObservaciones" columns="2">
+
+                        <h:outputLabel value="Bimestre: " />
+                        <p:selectOneMenu id="cboBimestre" value="#{alumno.idBimestre}">
+                            <f:selectItem itemLabel="Seleccione Bimestre" itemValue="" />  
+                            <f:selectItems value="#{alumno.listadoBimestre}" var="bimestres" 
+                                           itemLabel="#{bimestres.nombre}" itemValue="#{bimestres.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Observación: " />
+                        <p:inputTextarea id="txtaObservacion"
+                                         value="#{alumno.observacion}" rows="3" cols="60" />                        
+
+                        <p:commandButton oncomplete="dialogRegistrarObservaciones.hide();"
+                                         actionListener="#{alumno.grabarObservacion()}"
+                                         update=":frmConsultaNotas:dtLibreta, :frmConsultaNotas:dgObservacion, :frmConsultaNotas:panel" value="Grabar"
+                                         icon="ui-icon-disk" />
+
+                        <p:commandButton oncomplete="dialogRegistrarObservaciones.hide();"
+                                         actionListener="#{alumno.limpiar()}" value="Cancelar"
+                                         update=":frmConsultaNotas:dtLibreta, :frmConsultaNotas:dgObservacion, :frmConsultaNotas:panel" icon="ui-icon-cancel" />
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="dialogOrdenMerito" header="Registrar Responsabilidad"
+                      widgetVar="dialogRegistrarOrdenMerito" resizable="false" modal="false"
+                      showEffect="slide" width="700">
+                <h:form id="frmOrdenMerito">
+                    <h:panelGrid id="pgOrdenMerito" columns="2">
+
+                        <h:outputLabel value="Bimestre: " />
+                        <p:selectOneMenu id="cboBimestre" value="#{alumno.idBimestre}">
+                            <f:selectItem itemLabel="Seleccione Bimestre" itemValue="" />  
+                            <f:selectItems value="#{alumno.listadoBimestre}" var="bimestres" 
+                                           itemLabel="#{bimestres.nombre}" itemValue="#{bimestres.id}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Conducta: " />
+                        <p:inputText id="txtConducta" value="#{alumno.conducta}"/>
+
+                        <h:outputLabel value="Inasistencias: " />
+                        <p:inputText id="txtInasistencias" value="#{alumno.inasistencia}"/>   
+
+                        <h:outputLabel value="Tardanzas: " />
+                        <p:inputText id="txtTardanzas" value="#{alumno.tardanza}"/>                        
+
+                        <p:commandButton oncomplete="dialogRegistrarOrdenMerito.hide();"
+                                         actionListener="#{alumno.grabarOrdenMertio()}"
+                                         update=":frmConsultaNotas:dtLibreta, :frmConsultaNotas:dtOrdenMerito, :frmConsultaNotas:dgObservacion, :frmConsultaNotas:panel" value="Grabar"
+                                         icon="ui-icon-disk" />
+
+                        <p:commandButton oncomplete="dialogRegistrarOrdenMerito.hide();"
+                                         actionListener="#{alumno.limpiar()}" value="Cancelar"
+                                         update=":frmConsultaNotas:dtLibreta, :frmConsultaNotas:dtOrdenMerito, :frmConsultaNotas:dgObservacion, :frmConsultaNotas:panel" icon="ui-icon-cancel" />
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+
+            <p:dialog id="dialogNotaCurso" header="Registrar Notas"
+                      widgetVar="dialogRegistrarNotaCurso" resizable="false" modal="true"
+                      showEffect="slide" width="500">
+                <h:form id="frmRegistrarNotaCurso">
+                    <h:panelGrid id="pgRegistrarNotaCurso" columns="4">
+                        <h:outputLabel value="" />
+                        <h:outputLabel value="Curso: " />
+                        <h:outputLabel id="lblCurso" value="#{alumno.curso}"/>
+                        <h:outputLabel value="" />
+
+                        <h:outputLabel value="Bimestre I   " />
+                        <h:outputLabel value="Bimestre II  " />
+                        <h:outputLabel value="Bimestre III " />
+                        <h:outputLabel value="Bimestre IV  " />
+
+                        <p:inputText id="txtBimestre1" value="#{alumno.notaBimestre1}" style="width: 28px"/>
+                        <p:inputText id="txtBimestre2" value="#{alumno.notaBimestre2}" style="width: 28px"/>
+                        <p:inputText id="txtBimestre3" value="#{alumno.notaBimestre3}" style="width: 28px"/>
+                        <p:inputText id="txtBimestre4" value="#{alumno.notaBimestre4}" style="width: 28px"/>
+
+                        <h:outputLabel value="" />
+                        <p:commandButton oncomplete="dialogRegistrarNotaCurso.hide();"
+                                         actionListener="#{alumno.grabarNotaCurso()}"
+                                         update=":frmConsultaNotas:dtLibreta, :frmConsultaNotas:dtOrdenMerito, :frmConsultaNotas:dgObservacion, :frmConsultaNotas:panel" value="Grabar"
+                                         icon="ui-icon-disk" />
+
+                        <p:commandButton oncomplete="dialogRegistrarNotaCurso.hide();"
+                                         actionListener="#{alumno.limpiar()}" value="Cancelar"
+                                         update=":frmConsultaNotas:dtLibreta, :frmConsultaNotas:dtOrdenMerito, :frmConsultaNotas:dgObservacion, :frmConsultaNotas:panel" icon="ui-icon-cancel" />
+                        <h:outputLabel value="" />
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

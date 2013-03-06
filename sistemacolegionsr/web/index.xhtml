@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <link rel="stylesheet" type="text/css" href="resources/index_files/reset.css" />
+        <link rel="stylesheet" type="text/css" href="resources/index_files/structure.css" />
+        <script src="resources/js/jquery-1.9.1.js" ></script>
+        <script>
+            function loguear(){
+                $('#resultado').html('');
+                $.ajax({
+                    type: "POST",
+                    url: "ValidaUsuario",
+                    data: { txtUsuario: $('#txtUsuario').val(), txtClave: $('#txtClave').val() }
+                }).done(function( msg ) {
+                    $('#resultado').html(msg);
+                });
+            }
+            
+            function validateEnter(e) {
+                var key=e.keyCode || e.which;
+                if (key==13){ return true; } else { return false; }
+            }
+        </script>
+    </head>
+    <body>
+        <form class="box login">
+            <header class="cabeceraLogin">
+                <center>
+                    <img src="resources/image/insignia.png" width="55px" height="85px" /><br />
+                    <strong style="color:#FFFFFF">Colegio Nuestra Señora del Rosario</strong>
+                </center>
+            </header>
+            <fieldset class="boxBody">
+                <label style="color:#782923">Usuario</label>
+                <input tabindex="1" name="txtUsuario"  id="txtUsuario" placeholder="Ingrese usuario" required="" type="text" onkeyup="if(validateEnter(event) == true) { loguear(); }" />
+                <label style="color:#782923">Clave</label>
+                <input tabindex="2" placeholder="Ingrese clave" required="" name="txtClave" id="txtClave" type="password" onkeyup="if(validateEnter(event) == true) { loguear(); }" />
+                <div id="resultado"></div>
+            </fieldset>
+            <footer>
+                <table>
+                    <tr>
+                        <td style="width:200px"></td><td><input style=" align:right" class="" value="Ingresar" tabindex="4" type="button" onclick="loguear()" /></td>
+                    </tr>
+                </table>
+
+            </footer>
+        </form>
+    </body>
+</html>
